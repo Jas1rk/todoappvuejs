@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, reactive } from "vue";
+import EditInput from "./EditInput.vue";
 
 type TaskType = {
   id: number;
@@ -33,7 +34,6 @@ const saveTask = (taskId: number) => {
   emit("updated-Task", updated);
   editStates[taskId].isEditing = false;
 };
-
 </script>
 
 <template>
@@ -43,15 +43,29 @@ const saveTask = (taskId: number) => {
       v-for="(todo, index) in tasks"
       :key="todo.id"
     >
-      <input
-        v-if="editStates[todo.id]?.isEditing"
-        type="text"
-        class="py-1 px-4 outline-none border border-gray-400 rounded text-white"
-        v-model="editStates[todo.id].text"
-      />
-      <p v-else class="text-white">{{ index + 1 }} = {{ todo.text }}</p>
+      <EditInput>
+        <template #edit>
+          <input
+            v-if="editStates[todo.id]?.isEditing"
+            type="text"
+            class="py-1 px-4 outline-none border border-gray-400 rounded text-white"
+            v-model="editStates[todo.id].text"
+          />
+        </template>
+      </EditInput>
+
+      <p v-if="!editStates[todo.id]?.isEditing" class="text-white">
+        {{ index + 1 }} = {{ todo.text }}
+      </p>
+
       <div class="flex gap-3">
-        <p v-show="editStates[todo.id]?.isEditing" class="cursor-pointer text-sm" @click="saveTask(todo.id)">✔️</p>
+        <p
+          v-show="editStates[todo.id]?.isEditing"
+          class="cursor-pointer text-sm"
+          @click="saveTask(todo.id)"
+        >
+          ✔️
+        </p>
         <p
           v-if="editStates[todo.id]?.isEditing"
           class="cursor-pointer text-sm text-white"
